@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartUpdater", "SmartUpdater\SmartUpdater.csproj", "{0622B70F-361E-4A3B-89F1-1E7E6F16F462}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartUninstaller", "SmartUninstaller\SmartUninstaller.csproj", "{E9A93099-81E3-4F7E-9A42-03A3505DEC0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartLauncher", "SmartLauncher\SmartLauncher.csproj", "{65C7313F-6A49-494C-A1F4-462AFA754496}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +19,19 @@ Global
 		{0622B70F-361E-4A3B-89F1-1E7E6F16F462}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0622B70F-361E-4A3B-89F1-1E7E6F16F462}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0622B70F-361E-4A3B-89F1-1E7E6F16F462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9A93099-81E3-4F7E-9A42-03A3505DEC0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9A93099-81E3-4F7E-9A42-03A3505DEC0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9A93099-81E3-4F7E-9A42-03A3505DEC0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9A93099-81E3-4F7E-9A42-03A3505DEC0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65C7313F-6A49-494C-A1F4-462AFA754496}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65C7313F-6A49-494C-A1F4-462AFA754496}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65C7313F-6A49-494C-A1F4-462AFA754496}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65C7313F-6A49-494C-A1F4-462AFA754496}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {03FA13C7-9229-42CA-9F27-99DC47E08157}
 	EndGlobalSection
 EndGlobal

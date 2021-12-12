@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using SmartUpdater.Properties;
 
 namespace SmartUpdater
@@ -50,10 +51,9 @@ namespace SmartUpdater
                 fi.Ignore = false;
                 fi.Hash = Utils.getHashFile(fileInfo.FullName);
                 files.Add(fi);
-                if (programs.Any(info => info.ExeFile == fileInfo.Name))
-                {
+                if (programs.Any(info => Utils.ConvertDirectory(info.ExeFile,false,false) == Utils.ConvertDirectory(fileInfo.Name,false,false))) {
                     comboBox1.SelectedItem = null;
-                    comboBox1.SelectedIndex = comboBox1.Items.IndexOf(programs.FirstOrDefault(info => info.ExeFile == fileInfo.Name));
+                    comboBox1.SelectedIndex = comboBox1.Items.IndexOf(programs.FirstOrDefault(info => Utils.ConvertDirectory(info.ExeFile, false, false) == Utils.ConvertDirectory(fileInfo.Name, false, false)));
                 }
                 if (node == null)
                     treeView1.Nodes.Add(new TreeNode(fileInfo.Name) {Tag = fi});
@@ -113,8 +113,8 @@ namespace SmartUpdater
                     MessageBoxIcon.Exclamation);
                 return false;
             }
-            var sel = (comboBox1.SelectedItem as ProgramInfo).ExeFile;
-            var f = files.FirstOrDefault(info => info.Filepath == sel);
+            var sel = Utils.ConvertRoute((comboBox1.SelectedItem as ProgramInfo).ExeFile,false,false);
+            var f = files.FirstOrDefault(info => info.Filepath.EndsWith(sel));
             if (f == null)
             {
                 MessageBox.Show("Не найден основной файл программы " + sel, "Предупреждение", MessageBoxButtons.OK,
@@ -122,7 +122,8 @@ namespace SmartUpdater
                 return false;
             }
 
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(tb_path.Text+"/"+f.Filepath);
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(Utils.ConvertDirectory(tb_path.Text, false, true) +
+                                                                 Utils.ConvertDirectory(f.Filepath, false, false));
             tb_ver.Text = fvi.FileVersion;
             if (tb_dir_build.Text.Trim() == "")
                 tb_dir_build.Text = fvi.FileVersion;
@@ -174,7 +175,20 @@ namespace SmartUpdater
             build.Name = p.Name + " обновление до " + tb_ver.Text;
 
             DirectoryInfo di = new DirectoryInfo(fbd.SelectedPath);
-            File.WriteAllText(di.FullName+"/current.json",Utils.toJSON(build));
+            File.WriteAllText(di.FullName+"\\current.json",Utils.toJSON(build));
+            List<BuildInfo> allBuilds = null;
+            if (File.Exists(di.FullName + "\\all.json"))
+                try {
+                    allBuilds = Utils.toObject<List<BuildInfo>>(File.ReadAllText(di.FullName + "\\all.json"));
+                }
+                catch (Exception exception)
+                {
+                }
+            if(allBuilds == null)
+                allBuilds = new List<BuildInfo>();
+            allBuilds.Add(build);
+            File.WriteAllText(di.FullName + "/all.json", Utils.toJSON(allBuilds));
+
             var d = Directory.CreateDirectory(di.FullName+"/"+build.ServerPath);
             Utils.Copy(tb_path.Text,di.FullName+"/"+build.ServerPath);
             if (MessageBox.Show("Публикация завершена, открыть папку?", "Успех", MessageBoxButtons.YesNoCancel,

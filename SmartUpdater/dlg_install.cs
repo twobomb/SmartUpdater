@@ -53,27 +53,28 @@ namespace SmartUpdater
 
         private void button2_Click(object sender, EventArgs e){
             var _this = this;
-
+            tb_path.Text = tb_path.Text.Trim();
             bool isOnlyCurrentUser = rb_current.Checked;
             bool createShortcutDesktop = cb_desk.Checked;
             var b = BuildInfo.DownloadActualVersionInfo(p);
             if (b != null)
                 p.InstallProgramAsync(tb_path.Text,b, b1 =>{
                     if (b1){
-                        string s = "";
                         string installPath = Utils.ConvertDirectory(tb_path.Text, false, true);
-                        string uninstallPath = installPath  + "uninstall.exe";
-                        string pathToExe = installPath + p.ExeFile;
-                        string pathToIcon= installPath + p.IconPath;
-
-                        if (!Utils.AddShortcut(installPath,uninstallPath,pathToExe,pathToIcon,p.Name,p.Description,p.getCompany(), true, createShortcutDesktop, isOnlyCurrentUser))
+                        string uninstallPath = installPath + "uninstall.exe";
+                        string launcherPath = installPath + "launcher.exe";
+                        string pathToExe = installPath + Utils.ConvertDirectory(p.ExeFile,false,false);
+                        string pathToIcon = installPath + Utils.ConvertDirectory(p.IconPath,false,false);
+                        string s = "";
+                        if (!Utils.AddShortcut(installPath, uninstallPath, launcherPath , pathToExe, p.InstallName, pathToIcon, p.Name, p.Description, p.getCompany(), true, createShortcutDesktop, isOnlyCurrentUser))
                             s += "Не удалось создать ярлыки.";
-                        if(!Utils.AddUninstaller(installPath,uninstallPath,p.GUID,p.Name,b.Version,p.getCompany(),isOnlyCurrentUser))
+                        if (!Utils.AddUninstaller(installPath, uninstallPath, p.GUID, p.Name, b.Version, p.getCompany(), isOnlyCurrentUser))
                             s += "Не удалось добавить удаление программы";
-                        if(!Utils.AddOrUpdateInstallInfo(p.InstallName,p.Name,b.Version,p.getCompany(),installPath,pathToExe, isOnlyCurrentUser))
+                        if (!Utils.AddOrUpdateInstallInfo(p.InstallName, p.Name, b.Version, p.getCompany(), installPath, pathToExe, isOnlyCurrentUser))
                             s += "Не удалось добавить информацию о программе в реестр";
-
-                        if(string.IsNullOrEmpty(s))
+                        Utils.AddOrUpdateExeUninstallerInfo(p, b);
+                        Utils.AddOrUpdateExeLauncherInfo(p);
+                        if (string.IsNullOrEmpty(s))
                             MessageBox.Show("Программа установлена!", "Успех", MessageBoxButtons.OK,
                                 MessageBoxIcon.Information);
                         else

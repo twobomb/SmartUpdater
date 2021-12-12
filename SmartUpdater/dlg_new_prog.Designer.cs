@@ -44,6 +44,8 @@
             this.tb_install = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.cb_combine = new System.Windows.Forms.CheckBox();
+            this.tb_icon_path = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -125,9 +127,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(8, 277);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(94, 13);
+            this.label5.Size = new System.Drawing.Size(156, 13);
             this.label5.TabIndex = 9;
-            this.label5.Text = "Папка установки";
+            this.label5.Text = "Папка установки без слешей";
             // 
             // label6
             // 
@@ -164,14 +166,14 @@
             // 
             // tb_install
             // 
-            this.tb_install.Location = new System.Drawing.Point(120, 277);
+            this.tb_install.Location = new System.Drawing.Point(170, 277);
             this.tb_install.Name = "tb_install";
-            this.tb_install.Size = new System.Drawing.Size(281, 20);
+            this.tb_install.Size = new System.Drawing.Size(231, 20);
             this.tb_install.TabIndex = 6;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(273, 307);
+            this.button1.Location = new System.Drawing.Point(272, 338);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(129, 32);
             this.button1.TabIndex = 10;
@@ -184,18 +186,36 @@
             this.cb_combine.AutoSize = true;
             this.cb_combine.Checked = true;
             this.cb_combine.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_combine.Location = new System.Drawing.Point(15, 314);
+            this.cb_combine.Location = new System.Drawing.Point(14, 345);
             this.cb_combine.Name = "cb_combine";
             this.cb_combine.Size = new System.Drawing.Size(201, 17);
             this.cb_combine.TabIndex = 9;
             this.cb_combine.Text = "Совместить с конфигами сервера";
             this.cb_combine.UseVisualStyleBackColor = true;
             // 
+            // tb_icon_path
+            // 
+            this.tb_icon_path.Location = new System.Drawing.Point(120, 303);
+            this.tb_icon_path.Name = "tb_icon_path";
+            this.tb_icon_path.Size = new System.Drawing.Size(281, 20);
+            this.tb_icon_path.TabIndex = 11;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(8, 303);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(79, 13);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "Путь к иконке";
+            // 
             // dlg_new_prog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(437, 362);
+            this.ClientSize = new System.Drawing.Size(434, 396);
+            this.Controls.Add(this.tb_icon_path);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.cb_combine);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.tb_install);
@@ -238,5 +258,7 @@
         private System.Windows.Forms.TextBox tb_install;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox cb_combine;
+        private System.Windows.Forms.TextBox tb_icon_path;
+        private System.Windows.Forms.Label label7;
     }
 }

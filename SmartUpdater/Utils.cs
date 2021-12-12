@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -122,6 +124,8 @@ namespace SmartUpdater
         }
         public static string ConvertDirectory(string route, bool beginSlash = true, bool endSlash = true)
         {
+            if (route == null)
+                return "";
             route = route.Trim();
             route = route.Replace( "/",@"\");
             route = Regex.Replace(route, @"^\\","");
@@ -186,7 +190,29 @@ namespace SmartUpdater
             Directory.CreateDirectory(temp);
             return temp;
         }
+        /*public static void ObjectToFile(Object obj,string path) {
+            if (obj == null)
+               return;
+            
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.AssemblyFormat = FormatterAssemblyStyle.Simple;
+            using (var fs = File.Create(path)) {
+                bf.Serialize(fs, obj);
+                fs.Close();
+            }
+        }
 
+        public static Object FileToObject(string path) {
+            if (!File.Exists(path))
+                return null;
+
+            var fs= File.OpenRead(path);
+            BinaryFormatter binForm = new BinaryFormatter();
+            binForm.AssemblyFormat = FormatterAssemblyStyle.Simple;
+            Object obj = (Object)binForm.Deserialize(fs);
+            fs.Close();
+            return obj;
+        }*/
         public static List<FileDataInfo> getDifferenceFiles(ProgramInfo p, BuildInfo b){//Получить файлы у которых различается кеш
             if (!p.isInstalled())
                 return null;
@@ -222,7 +248,7 @@ namespace SmartUpdater
                     ver2 += "0";
                 int v1 = Int32.Parse(ver1);
                 int v2 = Int32.Parse(ver2);
-                return ver1 == ver2 ? 0 : (v1 > v2 ? -1 : 1);
+                return v1 == v2 ? 0 : (v1 > v2 ? -1 : 1);
             }
             catch (Exception ex)
             {
@@ -236,6 +262,73 @@ namespace SmartUpdater
             Program.ExceptionHandler(e);
         }
 
+        public static int CountFilesInDirectoryRecursive(string dir) {
+            if (!Directory.Exists(dir))
+                return 0;
+            int sum = 0;
+            var d = new DirectoryInfo(dir);
+            sum += d.GetFiles().Length;
+            foreach (var dr in d.GetDirectories())
+                sum += CountFilesInDirectoryRecursive(dr.FullName);
+            return sum;
+        }
+        public static void AddOrUpdateExeUninstallerInfo(ProgramInfo p, BuildInfo b) {
+            if(!p.isInstalled())
+                return;
+            string uninstallerFile = AppDomain.CurrentDomain.BaseDirectory + "prefabuninstall.bin";// prefabuninstall.bin - это переименованный smart_uninstaller.exe проекта smart uninstaller
+            if (!File.Exists(uninstallerFile))
+                return;
+            string fileUnistallDat = p.getInstallPath(false)+"uninstall.dat";
+            UninstallInfo uninstallInfo = null;
+
+            if (File.Exists(fileUnistallDat))
+                try {
+                    uninstallInfo = Utils.toObject<UninstallInfo>(File.ReadAllText(fileUnistallDat));
+                }
+                catch (Exception e)
+                {
+                    Utils.pushCrashLog(e);
+                }
+
+            if (uninstallInfo == null)
+                uninstallInfo = new UninstallInfo();
+            uninstallInfo.Name = p.Name;
+            uninstallInfo.GUID= p.GUID;
+            uninstallInfo.InstallName= p.InstallName;
+
+            foreach (var fileDataInfo in b.Files) {
+                if (fileDataInfo.IsDirectory)
+                {
+                    if(!uninstallInfo.dirs.Contains(fileDataInfo.Filepath))
+                        uninstallInfo.dirs.Add(fileDataInfo.Filepath);
+                }
+                else
+                {
+                    if (!uninstallInfo.files.Contains(fileDataInfo.Filepath))
+                        uninstallInfo.files.Add(fileDataInfo.Filepath);
+                }
+            }
+            File.WriteAllText(fileUnistallDat,Utils.toJSON(uninstallInfo));
+            File.Copy(uninstallerFile,p.getInstallPath(false)+"uninstall.exe",true);
+
+        }
+        public static void AddOrUpdateExeLauncherInfo(ProgramInfo p) {
+            if(!p.isInstalled())
+                return;
+            string launcherFile = AppDomain.CurrentDomain.BaseDirectory + "prefablauncher.bin";// prefablauncher.bin - это переименованный smart_launcher.exe проекта smart launcher
+            if (!File.Exists(launcherFile))
+                return;
+            string fileLauncherDat = p.getInstallPath(false)+ "launcher.dat";
+            LauncherInfo launchInfo = new LauncherInfo();
+            launchInfo.PathToExe= p.getInstallPath(true);
+            launchInfo.Name = p.Name;
+            launchInfo.ExeFile= p.ExeFile;
+            launchInfo.GUID= p.GUID;
+            launchInfo.InstallName= p.InstallName;
+            
+            File.WriteAllText(fileLauncherDat, Utils.toJSON(launchInfo));
+            File.Copy(launcherFile, p.getInstallPath(false)+ "launcher.exe", true);
+        }
         public static bool AddOrUpdateInstallInfo(string InstallName,string name, string version,string company, string installPath, string exePath,bool onlyForCurrentUser = false)
         {
             List<RegistryKey> tryKeys = new List<RegistryKey>();
@@ -268,6 +361,11 @@ namespace SmartUpdater
             return false;
         }
 
+        public static void StartApp(string path) {
+            ProcessStartInfo Info = new ProcessStartInfo();
+            Info.FileName = path;
+            Process.Start(Info);
+        }
         public static bool addToAutoStart(ProgramInfo p, bool onlyForCurrentUser = false){
             List<RegistryKey> tryKeys = new List<RegistryKey>();
             if (onlyForCurrentUser)
@@ -326,8 +424,21 @@ namespace SmartUpdater
             }
             return false;
         }
-        public static bool AddShortcut(string installPath,string uninstallPath, string pathToExe,string iconPath, string name,string description, string company, bool addToStartMenu = true, bool addToDesktop = true, bool onlyForCurrentUser = false)
+
+        public static string tryGetRegisterValue(RegistryKey key,string subName, string valueField) {
+            try {
+                var v1 = key.OpenSubKey(subName);
+                if (v1 != null)
+                    return v1.GetValue(valueField).ToString();
+            }
+            catch (Exception e) { }
+
+            return null;
+        }
+        public static bool AddShortcut(string installPath,string uninstallPath,string launcherPath, string pathToExe,string installName,string iconPath, string name,string description, string company, bool addToStartMenu = true, bool addToDesktop = true, bool onlyForCurrentUser = false)
         {
+            string startMenuDir = "";
+            string shortcutDesktop = "";
             try{
                 string commonStartMenuPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
                 if(onlyForCurrentUser)
@@ -345,19 +456,31 @@ namespace SmartUpdater
                     shortcut.Description = description;
                     if (!string.IsNullOrEmpty(iconPath))
                         shortcut.IconLocation = iconPath;
-                    shortcut.TargetPath = pathToExe;
+                    shortcut.TargetPath = launcherPath;
                     shortcut.Save();
 
-                    shortcutLocation = Path.Combine(appStartMenuPath, "Удаление программы "+name + ".lnk");
+
+                    shortcutLocation = Path.Combine(appStartMenuPath, "Проверить обновление.lnk");
+                    shortcut = (IWshShortcut) shell.CreateShortcut(shortcutLocation);
+                    shortcut.Description = "Проверить обновление " + name;
+                    if (!string.IsNullOrEmpty(iconPath))
+                        shortcut.IconLocation = iconPath;
+                    shortcut.Arguments = "checkupdate";
+                    shortcut.TargetPath = launcherPath;
+                    shortcut.Save();
+
+                    shortcutLocation = Path.Combine(appStartMenuPath, "Удалить программу.lnk");
                     shortcut = (IWshShortcut) shell.CreateShortcut(shortcutLocation);
                     shortcut.Description = "Удаление программы " + name;
                     if (!string.IsNullOrEmpty(iconPath))
                         shortcut.IconLocation = iconPath;
                     shortcut.TargetPath = uninstallPath;
                     shortcut.Save();
+
+                    startMenuDir = appStartMenuPath;
+
                 }
-                if (addToDesktop)
-                {
+                if (addToDesktop) {
                     var deskLink =
                         Environment.GetFolderPath(onlyForCurrentUser
                             ? Environment.SpecialFolder.DesktopDirectory
@@ -369,6 +492,32 @@ namespace SmartUpdater
                         shortcut.IconLocation = iconPath;
                     shortcut.TargetPath = pathToExe;
                     shortcut.Save();
+                    shortcutDesktop = deskLink;
+                }
+
+                //Добавить записи в реестр о размещение ярылыков
+                List<RegistryKey> tryKeys = new List<RegistryKey>();
+                if (onlyForCurrentUser)
+                    tryKeys.Add(Microsoft.Win32.Registry.CurrentUser);
+                else
+                {
+                    tryKeys.Add(Microsoft.Win32.Registry.LocalMachine);
+                    tryKeys.Add(Microsoft.Win32.Registry.CurrentUser);
+                }
+                foreach (var registryKey in tryKeys){
+                    try
+                    {
+                        RegistryKey IsRegKey = registryKey.CreateSubKey(@"SOFTWARE\" + installName);
+                        if(!string.IsNullOrEmpty(shortcutDesktop))
+                            IsRegKey.SetValue("DesktopShortcut", shortcutDesktop);
+                        if(!string.IsNullOrEmpty(startMenuDir))
+                            IsRegKey.SetValue("StartMenuDirectory", startMenuDir);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Utils.pushCrashLog(ex);
+                    }
                 }
                 return true;
             }

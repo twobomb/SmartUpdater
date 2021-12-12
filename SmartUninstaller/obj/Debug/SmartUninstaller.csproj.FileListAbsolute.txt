@@ -1,0 +1,8 @@
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUninstaller\bin\Debug\SmartUninstaller.exe
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUninstaller\bin\Debug\SmartUninstaller.pdb
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUninstaller\obj\Debug\SmartUninstaller.exe
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUninstaller\obj\Debug\SmartUninstaller.pdb
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUninstaller\obj\Debug\SmartUninstaller.csprojAssemblyReference.cache
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUninstaller\bin\Debug\Newtonsoft.Json.xml
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUninstaller\obj\Debug\SmartUninstaller.csproj.CopyComplete
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUninstaller\obj\Debug\SmartUninstaller.csproj.Fody.CopyLocal.cache

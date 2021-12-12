@@ -59,6 +59,15 @@ namespace SmartUpdater
                 p = ProgramInfo.DownloadList().First(info => info.GUID == this.GUID);
             return Utils.ConvertRoute(Settings.Default.host,false,false) + Utils.ConvertRoute(p.Path) + Utils.ConvertRoute(ServerPath);
         }
+
+        public static BuildInfo DownloadBuildByVersion(ProgramInfo info,string version)
+        {
+            var list = DownloadAllVersionInfo(info);
+            foreach (var buildInfo in list)
+                if (Utils.compareVersion(buildInfo.Version, version) == 0)
+                    return buildInfo;
+            return null;
+        } 
         public static List<BuildInfo> DownloadAllVersionInfo(ProgramInfo info){
             try
             {

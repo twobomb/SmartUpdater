@@ -31,6 +31,7 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // progressBar1
@@ -59,11 +60,22 @@
             this.button1.Text = "Отмена";
             this.button1.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label2.Location = new System.Drawing.Point(108, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(293, 16);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Идёт обновление, пожалуйста подождите...";
+            // 
             // dlg_loader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(496, 158);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.progressBar1);
@@ -84,6 +96,6 @@
         public System.Windows.Forms.ProgressBar progressBar1;
         public System.Windows.Forms.Label label1;
         public System.Windows.Forms.Button button1;
-
+        private System.Windows.Forms.Label label2;
     }
 }

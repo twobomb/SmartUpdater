@@ -17,3 +17,25 @@ C:\Users\twobomb\documents\visual studio 2013\Projects\SmartUpdater\SmartUpdater
 C:\Users\twobomb\Documents\Visual Studio 2013\Projects\SmartUpdater\SmartUpdater\obj\Debug\Interop.IWshRuntimeLibrary.dll
 C:\Users\twobomb\Documents\Visual Studio 2013\Projects\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.csproj.ResolveComReference.cache
 C:\Users\twobomb\Documents\Visual Studio 2013\Projects\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.dlg_install.resources
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\SmartUpdater.exe.config
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\SmartUpdater.exe
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\SmartUpdater.pdb
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\Newtonsoft.Json.dll
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\Newtonsoft.Json.xml
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\Interop.IWshRuntimeLibrary.dll
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.csproj.ResolveComReference.cache
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.dlg_deploy.resources
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.dlg_install.resources
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.dlg_loader.resources
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.dlg_new_prog.resources
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.dlg_settings.resources
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.dlg_version_list.resources
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.Form1.resources
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.Properties.Resources.resources
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.csproj.GenerateResource.cache
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.csproj.CopyComplete
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.exe
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.pdb
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\prefabuninstall.bin
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.csprojAssemblyReference.cache
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\prefablauncher.bin

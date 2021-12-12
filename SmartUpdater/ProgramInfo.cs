@@ -32,36 +32,58 @@ namespace SmartUpdater
 
         public string getInstallPath(bool withExe = false){
             string path = "";
-            try{
-                var v1 = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID);
-                path = v1.GetValue("InstallLocation").ToString();
-            }
-            catch (Exception e){}
-            try{
-                var v1 = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID);
-                path = v1.GetValue("InstallLocation").ToString();
-            }
-            catch (Exception e){}
-
-            try{
-                var v1 = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\" + InstallName);
-                path = v1.GetValue("InstallLocation").ToString();
-            }
-            catch (Exception e){}
-            try{
-                var v1 = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\" + InstallName);
-                path = v1.GetValue("InstallLocation").ToString();
-            }
-            catch (Exception e){}
-
+            path = Utils.tryGetRegisterValue(Registry.CurrentUser,
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID, "InstallLocation");
+            if (string.IsNullOrEmpty(path))
+                path = Utils.tryGetRegisterValue(Registry.LocalMachine,
+                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID, "InstallLocation");
+            if (string.IsNullOrEmpty(path))
+                path = Utils.tryGetRegisterValue(Registry.CurrentUser, @"SOFTWARE\" + InstallName, "InstallLocation");
+            if (string.IsNullOrEmpty(path))
+                path = Utils.tryGetRegisterValue(Registry.LocalMachine, @"SOFTWARE\" + InstallName, "InstallLocation");
+                
             if (!string.IsNullOrEmpty(path))
-                return Utils.ConvertDirectory(path, false, true) + (withExe ? ExeFile : "");
+                return Utils.ConvertDirectory(path, false, true) + (withExe ? Utils.ConvertDirectory(ExeFile,false,false) : "");
 
-            return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + "\\" + InstallName + "\\" + (withExe ? ExeFile : "");
+            return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + "\\" + InstallName + "\\" + (withExe ? Utils.ConvertDirectory(ExeFile,false,false) : "");
+        }
+
+
+        public bool IsInstallForCurrentUser() {
+            if (!string.IsNullOrEmpty(Utils.tryGetRegisterValue(Registry.CurrentUser,
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID, "DisplayVersion")))
+                return true;
+            if (!string.IsNullOrEmpty(Utils.tryGetRegisterValue(Registry.LocalMachine,
+                @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID, "DisplayVersion")))
+                return false;
+            if (!string.IsNullOrEmpty(Utils.tryGetRegisterValue(Registry.CurrentUser, @"SOFTWARE\" + InstallName,
+                "Version")))
+                return true;
+            if (!string.IsNullOrEmpty(Utils.tryGetRegisterValue(Registry.LocalMachine, @"SOFTWARE\" + InstallName,
+                "Version")))
+                return false;
+
+            return true;
         }
         public bool isInstalled(){
-            try{
-                return File.Exists(getInstallPath(true));
+            try {
+                if (File.Exists(getInstallPath(true)))
+                    return true;
+                string version = null;
+                version = Utils.tryGetRegisterValue(Registry.CurrentUser,
+                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID, "DisplayVersion");
+                if (string.IsNullOrEmpty(version))
+                    version = Utils.tryGetRegisterValue(Registry.LocalMachine,
+                        @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID, "DisplayVersion");
+                if (string.IsNullOrEmpty(version))
+                    version = Utils.tryGetRegisterValue(Registry.CurrentUser, @"SOFTWARE\" + InstallName, "Version");
+                if (string.IsNullOrEmpty(version))
+                    version = Utils.tryGetRegisterValue(Registry.LocalMachine, @"SOFTWARE\" + InstallName, "Version");
+                if (!string.IsNullOrEmpty(version)) {
+                    var build = BuildInfo.DownloadBuildByVersion(this,version);
+                    if (build != null)
+                        return true;
+                }
             }
             catch (Exception e){
                 Utils.pushCrashLog(e);
@@ -69,7 +91,81 @@ namespace SmartUpdater
             return false;
         }
 
-        public bool canUpdate(){
+
+        public void UpdateTo(BuildInfo build, Action<bool, string> complete, Action<int, int> process, CancellationToken cancelToken) {
+            ProgramInfo p = this;
+            if (!p.isInstalled())
+            {
+                complete(false, "Программа не установлена!");
+                return;
+            }
+            List<FileDataInfo> filesToUpdate = new List<FileDataInfo>();
+            if (build.UpdateOnlyChanges && !build.ClearAfterInstall)
+                filesToUpdate = Utils.getDifferenceFiles(p, build);
+            else
+                filesToUpdate = build.Files;
+
+            if (cancelToken.IsCancellationRequested)
+            {
+                complete(false, "Процесс обновления отменен пользователем");
+                return;
+            }
+            var temp = Utils.getEmptyTempDir();
+            Utils.DownloadFilesAsync(build.GetServerRootPath(p), filesToUpdate, temp, (b, s) => {
+                if (!b)
+                    complete(false, s);
+                else
+                {
+                    if (build.ClearAfterInstall)
+                    {
+                        Directory.Delete(p.getInstallPath(false), true);
+                        int waittime = 5000;
+                        while (new DirectoryInfo(p.getInstallPath(false)).Exists)
+                        {
+                            Thread.Sleep(100);
+                            waittime -= 100;
+                            if (waittime <= 0)
+                            {
+                                complete(false, "Вышел таймаут удаления папки со старой версией программой");
+                                return;
+                            }
+                        }
+                    }
+                    try
+                    {
+                        Utils.Copy(temp, p.getInstallPath(false));
+                        Directory.Delete(temp, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Utils.pushCrashLog(ex);
+                        complete(false, ex.Message);
+                        return;
+                    }
+
+                    try
+                    {
+                        string installPath = Utils.ConvertDirectory(p.getInstallPath(false), false, true);
+                        string uninstallPath = installPath + "uninstall.exe";
+                        string pathToExe = installPath + Utils.ConvertDirectory(p.ExeFile, false, false);
+                        string pathToIcon = installPath + Utils.ConvertDirectory(p.IconPath, false, false);
+                        bool isOnlyCurrentUser = p.IsInstallForCurrentUser();
+                        Utils.AddOrUpdateExeUninstallerInfo(p, build);
+                        Utils.AddOrUpdateExeLauncherInfo(p);
+                        Utils.AddUninstaller(installPath, uninstallPath, p.GUID, p.Name, build.Version, p.getCompany(),
+                            isOnlyCurrentUser);
+                        Utils.AddOrUpdateInstallInfo(p.InstallName, p.Name, build.Version, p.getCompany(), installPath,
+                            pathToExe, isOnlyCurrentUser);
+                    }
+                    catch (Exception e)
+                    {
+                    }
+                    complete(true, "Успех");
+                }
+            }, process, cancelToken);
+        }
+
+        public bool canUpdate(){//есть новая версия?
             if (!isInstalled())
                 return false;
             var build = BuildInfo.DownloadActualVersionInfo(this);
@@ -78,15 +174,25 @@ namespace SmartUpdater
             return false;
         }
         public string installedVersion(){
-            if (isInstalled())
-            {
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(getInstallPath(true));
-                return fvi.FileVersion;
+            if (isInstalled()) {
+                if (File.Exists(getInstallPath(true))) {
+                    FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(getInstallPath(true));
+                    return fvi.FileVersion;
+                }
+                string version = null;
+                version = Utils.tryGetRegisterValue(Registry.CurrentUser,
+                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID, "DisplayVersion");
+                if (string.IsNullOrEmpty(version))
+                    version = Utils.tryGetRegisterValue(Registry.LocalMachine,
+                        @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" + GUID, "DisplayVersion");
+                if (string.IsNullOrEmpty(version))
+                    version = Utils.tryGetRegisterValue(Registry.CurrentUser, @"SOFTWARE\" + InstallName, "Version");
+                if (string.IsNullOrEmpty(version))
+                    version = Utils.tryGetRegisterValue(Registry.LocalMachine, @"SOFTWARE\" + InstallName, "Version");
+                if (!string.IsNullOrEmpty(version))
+                    return version;
             }
-            return "0";
-        }
-        public string getUninstallPath(){
-            return getInstallPath(false) + "Uninstall.exe";
+            return "";
         }
         public string getCompany(){
             if (isInstalled()){
@@ -95,6 +201,14 @@ namespace SmartUpdater
                     return null;
                 return fvi.CompanyName;
             }
+            return null;
+        }
+
+        public static ProgramInfo DownloadByGuid(string guid) {
+            var list = DownloadList();
+            foreach (var programInfo in list)
+                if (programInfo.GUID.Equals(guid))
+                    return programInfo;
             return null;
         }
         public static List<ProgramInfo> DownloadList(){

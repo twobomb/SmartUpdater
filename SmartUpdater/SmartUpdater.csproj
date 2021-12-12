@@ -93,9 +93,11 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="LauncherInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProgramInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UninstallInfo.cs" />
     <Compile Include="Utils.cs" />
     <EmbeddedResource Include="dlg_deploy.resx">
       <DependentUpon>dlg_deploy.cs</DependentUpon>
@@ -129,6 +131,12 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
+    <None Include="prefablauncher.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="prefabuninstall.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

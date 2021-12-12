@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 using SmartUpdater.Properties;
 
 namespace SmartUpdater
@@ -155,17 +156,22 @@ namespace SmartUpdater
             }
         }
 
-        private void btn_delete_Click(object sender, EventArgs e){
-
+        private void btn_delete_Click(object sender, EventArgs ev){
             if (listBox1.SelectedItem != null){
                 var p  = (listBox1.SelectedItem as ProgramInfo);
                 if(MessageBox.Show("Вы уверены что хотите удалить "+p.Name,"Удалить?",MessageBoxButtons.YesNoCancel,MessageBoxIcon.Warning) != DialogResult.Yes)
                     return;
-                Directory.Delete(p.getInstallPath(false),true);
-
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.Arguments= "skipconfirm";
+                psi.FileName = p.getInstallPath(false) + "uninstall.exe";
+                var process = Process.Start(psi);
+                bool isDelete = false;
+                process.WaitForExit(10000);
+                
                 var inx = listBox1.SelectedIndex;
                 listBox1.SelectedItem = null;
                 listBox1.SelectedIndex = inx;
+
                 MessageBox.Show("Удаление завершено!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -181,7 +187,7 @@ namespace SmartUpdater
             };
             loader.Shown += (o, args) =>{
                 var build = BuildInfo.DownloadActualVersionInfo(p);
-                UpdateTo(p, build, (b,error) =>{
+                p.UpdateTo( build, (b,error) =>{
 
                     loader.Invoke(new Action(() =>
                     {
@@ -191,6 +197,8 @@ namespace SmartUpdater
                         listBox1.SelectedItem = null;
                         listBox1.SelectedIndex = inx;
                     }));
+                    
+
                     if(b)
                         MessageBox.Show(
                             "Обновление завершено!",
@@ -213,51 +221,6 @@ namespace SmartUpdater
         }
 
 
-        public void UpdateTo(ProgramInfo p, BuildInfo build, Action<bool,string> complete, Action<int,int> process, CancellationToken cancelToken){
-            if (!p.isInstalled()){
-                complete(false,"Программа не установлена!");
-                return;
-            }
-            List<FileDataInfo> filesToUpdate = new List<FileDataInfo>();
-            if (build.UpdateOnlyChanges && !build.ClearAfterInstall)
-                filesToUpdate = Utils.getDifferenceFiles(p, build);
-            else
-                filesToUpdate = build.Files;
-
-            if (cancelToken.IsCancellationRequested){
-                complete(false, "Процесс обновления отменен пользователем");
-                return;
-            }
-            var temp = Utils.getEmptyTempDir();
-            Utils.DownloadFilesAsync(build.GetServerRootPath(p), filesToUpdate, temp, (b,s) =>{
-                if (!b)
-                    complete(false,s);
-                else{
-                    if (build.ClearAfterInstall){
-                        Directory.Delete(p.getInstallPath(false), true);
-                        int waittime = 5000;
-                        while (new DirectoryInfo(p.getInstallPath(false)).Exists){
-                            Thread.Sleep(100);
-                            waittime -= 100;
-                            if (waittime <= 0){
-                                complete(false,"Вышел таймаут удаления папки со старой версией программой");
-                                return;
-                            }
-                        }
-                    }
-                    try{
-                        Utils.Copy(temp, p.getInstallPath(false));
-                        Directory.Delete(temp, true);
-                    }
-                    catch (Exception ex){
-                        Utils.pushCrashLog(ex);
-                        complete(false,ex.Message);                          
-                        return;
-                    }
-                    complete(true,"Успех");                          
-                }
-            }, process,cancelToken);
-        }
 
         private void btn_check_files_Click(object sender, EventArgs e){
             var p = (listBox1.SelectedItem as ProgramInfo);
@@ -318,7 +281,7 @@ namespace SmartUpdater
 
                 loader.Shown += (o, args) =>
                 {
-                    UpdateTo(p, build, (b,error) =>
+                    p.UpdateTo( build, (b,error) =>
                     {
                         loader.Invoke(new Action(() =>
                         {
@@ -377,7 +340,7 @@ namespace SmartUpdater
                     source.Cancel(false);
                 };
                 loader.Shown += (o, args) =>{
-                    UpdateTo(p, build, (b,error) =>
+                    p.UpdateTo( build, (b,error) =>
                     {
                         loader.Invoke(new Action(() =>
                         {

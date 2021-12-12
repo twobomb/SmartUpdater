@@ -23,6 +23,13 @@ namespace SmartUpdater
             info.Name = tb_name.Text.Trim();
             info.GUID= tb_uid.Text.Trim();
             info.InstallName = tb_install.Text.Trim();
+            if (info.InstallName.Contains("/") || info.InstallName.Contains("\\"))
+            {
+                MessageBox.Show("InstallName не допускает слелешей");
+                return;
+            }
+
+            info.IconPath= tb_icon_path.Text.Trim();
             info.Path = tb_path_server.Text.Trim();
             info.AutoUpdate = cb_autoupdate.Checked;
             info.Visible = cb_visible.Checked;

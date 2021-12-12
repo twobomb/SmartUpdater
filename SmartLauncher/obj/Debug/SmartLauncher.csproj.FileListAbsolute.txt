@@ -1,0 +1,8 @@
+C:\Users\twobomb\source\repos\SmartUpdater\SmartLauncher\bin\Debug\SmartLauncher.exe
+C:\Users\twobomb\source\repos\SmartUpdater\SmartLauncher\bin\Debug\SmartLauncher.pdb
+C:\Users\twobomb\source\repos\SmartUpdater\SmartLauncher\bin\Debug\Newtonsoft.Json.xml
+C:\Users\twobomb\source\repos\SmartUpdater\SmartLauncher\obj\Debug\SmartLauncher.csprojAssemblyReference.cache
+C:\Users\twobomb\source\repos\SmartUpdater\SmartLauncher\obj\Debug\SmartLauncher.csproj.Fody.CopyLocal.cache
+C:\Users\twobomb\source\repos\SmartUpdater\SmartLauncher\obj\Debug\SmartLauncher.csproj.CopyComplete
+C:\Users\twobomb\source\repos\SmartUpdater\SmartLauncher\obj\Debug\SmartLauncher.exe
+C:\Users\twobomb\source\repos\SmartUpdater\SmartLauncher\obj\Debug\SmartLauncher.pdb
