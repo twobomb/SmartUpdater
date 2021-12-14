@@ -218,9 +218,9 @@
             this.lbl_full_size.AutoSize = true;
             this.lbl_full_size.Location = new System.Drawing.Point(4, 246);
             this.lbl_full_size.Name = "lbl_full_size";
-            this.lbl_full_size.Size = new System.Drawing.Size(109, 13);
+            this.lbl_full_size.Size = new System.Drawing.Size(92, 13);
             this.lbl_full_size.TabIndex = 7;
-            this.lbl_full_size.Text = "Общий размер: 2мб";
+            this.lbl_full_size.Text = "Общий размер: -";
             // 
             // tb_min_upd
             // 

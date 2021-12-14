@@ -15,7 +15,7 @@ namespace SmartUpdater
         public string GUID{ get; set; } // уникальный ид программы
         public string Version{ get; set; } // версия
         public bool UpdateOnlyChanges { get; set; } //true-  скачать файлы только с другими хешами, false -скачать все файлы
-        public bool ClearAfterInstall{ get; set; } //Очищать папку перед обновлением
+        public bool ClearAfterInstall{ get; set; } //Очищать папку перед обновлением, на основании uninstall.dat
         public bool UpdateRequired { get; set; }  // обязательное обновление, если нет то будет спрашивать
         public string ServerPath{ get; set; }  // путь на сервере к папке с билдом, относительно папки с билдами
         public List<FileDataInfo> Files{ get; set; }  // файлы программы

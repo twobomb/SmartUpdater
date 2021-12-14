@@ -5,10 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using SmartUpdater.Properties;
 
 namespace SmartUpdater
@@ -24,12 +26,20 @@ namespace SmartUpdater
         public string InstallName { get; set; } // название папки для установки
         public string IconPath { get; set; } // путь к иконке
         public string Description { get; set; } //описание
+        public bool AddAutoStartSystem { get; set; } //добавить в автозагрузку
+        public bool SuggestAddAutoStartSystem { get; set; } //предлагать при установке добавить в автозагрузку
 
         public override string ToString()
         {
             return Name;
         }
 
+
+        public string getProcessName()
+        {
+            var m = Regex.Match(ExeFile, @"([^/\\]+)\.exe\s*$");
+            return m.Groups[1].Value;
+        }
         public string getInstallPath(bool withExe = false){
             string path = "";
             path = Utils.tryGetRegisterValue(Registry.CurrentUser,
@@ -91,6 +101,25 @@ namespace SmartUpdater
             return false;
         }
 
+        public void KillProcesses(){
+            var processes = Process.GetProcesses();
+            foreach (var process1 in processes){//Убить открытые процессы
+                try
+                {
+                    if (process1.MainModule != null)
+                    {
+                        var filePath = new FileInfo(process1.MainModule.FileName);
+                        FileInfo inst = new FileInfo(getInstallPath(true));
+                        if (filePath.FullName == inst.FullName)
+                        {
+                            process1.Kill();
+                            process1.WaitForExit(5000);
+                        }
+                    }
+                }
+                catch (Exception) { }
+            }
+        }
 
         public void UpdateTo(BuildInfo build, Action<bool, string> complete, Action<int, int> process, CancellationToken cancelToken) {
             ProgramInfo p = this;
@@ -99,6 +128,8 @@ namespace SmartUpdater
                 complete(false, "Программа не установлена!");
                 return;
             }
+            p.KillProcesses();
+
             List<FileDataInfo> filesToUpdate = new List<FileDataInfo>();
             if (build.UpdateOnlyChanges && !build.ClearAfterInstall)
                 filesToUpdate = Utils.getDifferenceFiles(p, build);
@@ -118,18 +149,42 @@ namespace SmartUpdater
                 {
                     if (build.ClearAfterInstall)
                     {
-                        Directory.Delete(p.getInstallPath(false), true);
-                        int waittime = 5000;
-                        while (new DirectoryInfo(p.getInstallPath(false)).Exists)
+                        try
                         {
-                            Thread.Sleep(100);
-                            waittime -= 100;
-                            if (waittime <= 0)
+                            var path = getInstallPath(false);
+                            if (File.Exists(path + "uninstall.dat"))
                             {
-                                complete(false, "Вышел таймаут удаления папки со старой версией программой");
-                                return;
+                                UninstallInfo info =
+                                    JsonConvert.DeserializeObject<UninstallInfo>(
+                                        File.ReadAllText(getInstallPath(false) + "uninstall.dat"));
+                                foreach (var infoFile in info.files)
+                                {
+                                    try
+                                    {
+                                        if (File.Exists(path + infoFile))
+                                            File.Delete(path + infoFile);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                    }
+                                }
+                                foreach (var infoDir in info.dirs)
+                                {
+                                    try
+                                    {
+                                        if (Utils.CountFilesInDirectoryRecursive(path + infoDir) == 0)
+                                            Directory.Delete(path + infoDir, true);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                    }
+                                }
                             }
                         }
+                        catch (Exception eex){
+                            Utils.pushCrashLog(eex);
+                        }
+
                     }
                     try
                     {

@@ -34,7 +34,6 @@
             this.настройкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.подключениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dev_menu = new System.Windows.Forms.ToolStripMenuItem();
-            this.созданиеКонфигаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.публикацияНовойВерсииНаСерверToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.показатьВсеПрограммыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.созданиеКонфигаПрограммыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,6 +52,7 @@
             this.btn_start = new System.Windows.Forms.Button();
             this.lbl_name = new System.Windows.Forms.Label();
             this.lbl_update_info = new System.Windows.Forms.Label();
+            this.включитьМенюРазработчикаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,7 +86,8 @@
             // настройкиToolStripMenuItem
             // 
             this.настройкиToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.подключениеToolStripMenuItem});
+            this.подключениеToolStripMenuItem,
+            this.включитьМенюРазработчикаToolStripMenuItem});
             this.настройкиToolStripMenuItem.Name = "настройкиToolStripMenuItem";
             this.настройкиToolStripMenuItem.Size = new System.Drawing.Size(79, 20);
             this.настройкиToolStripMenuItem.Text = "Настройки";
@@ -101,19 +102,12 @@
             // dev_menu
             // 
             this.dev_menu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.созданиеКонфигаToolStripMenuItem,
             this.публикацияНовойВерсииНаСерверToolStripMenuItem,
             this.показатьВсеПрограммыToolStripMenuItem,
             this.созданиеКонфигаПрограммыToolStripMenuItem});
             this.dev_menu.Name = "dev_menu";
             this.dev_menu.Size = new System.Drawing.Size(132, 20);
             this.dev_menu.Text = "Меню разработчика";
-            // 
-            // созданиеКонфигаToolStripMenuItem
-            // 
-            this.созданиеКонфигаToolStripMenuItem.Name = "созданиеКонфигаToolStripMenuItem";
-            this.созданиеКонфигаToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
-            this.созданиеКонфигаToolStripMenuItem.Text = "Создание конфига";
             // 
             // публикацияНовойВерсииНаСерверToolStripMenuItem
             // 
@@ -126,7 +120,7 @@
             // 
             this.показатьВсеПрограммыToolStripMenuItem.Name = "показатьВсеПрограммыToolStripMenuItem";
             this.показатьВсеПрограммыToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
-            this.показатьВсеПрограммыToolStripMenuItem.Text = "Показать все программы";
+            this.показатьВсеПрограммыToolStripMenuItem.Text = "Показать скрытые программы";
             this.показатьВсеПрограммыToolStripMenuItem.Click += new System.EventHandler(this.показатьВсеПрограммыToolStripMenuItem_Click);
             // 
             // созданиеКонфигаПрограммыToolStripMenuItem
@@ -281,6 +275,13 @@
             this.lbl_update_info.TabIndex = 15;
             this.lbl_update_info.Text = "nedupd";
             // 
+            // включитьМенюРазработчикаToolStripMenuItem
+            // 
+            this.включитьМенюРазработчикаToolStripMenuItem.Name = "включитьМенюРазработчикаToolStripMenuItem";
+            this.включитьМенюРазработчикаToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
+            this.включитьМенюРазработчикаToolStripMenuItem.Text = "Включить меню разработчика";
+            this.включитьМенюРазработчикаToolStripMenuItem.Click += new System.EventHandler(this.включитьМенюРазработчикаToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -321,7 +322,6 @@
         private System.Windows.Forms.ToolStripMenuItem настройкиToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem подключениеToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dev_menu;
-        private System.Windows.Forms.ToolStripMenuItem созданиеКонфигаToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem публикацияНовойВерсииНаСерверToolStripMenuItem;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Label label1;
@@ -342,6 +342,7 @@
         private System.Windows.Forms.ToolStripMenuItem показатьВсеПрограммыToolStripMenuItem;
         private System.Windows.Forms.Label lbl_update_info;
         private System.Windows.Forms.ToolStripMenuItem созданиеКонфигаПрограммыToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem включитьМенюРазработчикаToolStripMenuItem;
     }
 }
 

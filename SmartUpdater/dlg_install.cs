@@ -17,6 +17,9 @@ namespace SmartUpdater
             InitializeComponent();
             this.p = p;
             tb_path.Text = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + "\\" + p.InstallName + "\\";
+            
+            cb_autostart.Visible = p.SuggestAddAutoStartSystem;
+            cb_autostart.Checked = p.AddAutoStartSystem;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -38,7 +41,7 @@ namespace SmartUpdater
         {
 
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-                fbd.RootFolder = Environment.SpecialFolder.ProgramFiles;
+
             try
             {
                 fbd.SelectedPath = tb_path.Text;
@@ -56,6 +59,7 @@ namespace SmartUpdater
             tb_path.Text = tb_path.Text.Trim();
             bool isOnlyCurrentUser = rb_current.Checked;
             bool createShortcutDesktop = cb_desk.Checked;
+            bool isAddtoAutoStart = cb_autostart.Checked;
             var b = BuildInfo.DownloadActualVersionInfo(p);
             if (b != null)
                 p.InstallProgramAsync(tb_path.Text,b, b1 =>{
@@ -66,6 +70,10 @@ namespace SmartUpdater
                         string pathToExe = installPath + Utils.ConvertDirectory(p.ExeFile,false,false);
                         string pathToIcon = installPath + Utils.ConvertDirectory(p.IconPath,false,false);
                         string s = "";
+                        if (isAddtoAutoStart){
+                            if (!Utils.AddToAutoStart(p.InstallName, pathToExe, isOnlyCurrentUser))
+                                s += "Не удалось добавить в автозапуск при старте Windows.";
+                        }
                         if (!Utils.AddShortcut(installPath, uninstallPath, launcherPath , pathToExe, p.InstallName, pathToIcon, p.Name, p.Description, p.getCompany(), true, createShortcutDesktop, isOnlyCurrentUser))
                             s += "Не удалось создать ярлыки.";
                         if (!Utils.AddUninstaller(installPath, uninstallPath, p.GUID, p.Name, b.Version, p.getCompany(), isOnlyCurrentUser))

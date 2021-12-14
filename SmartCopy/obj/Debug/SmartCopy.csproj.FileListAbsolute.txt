@@ -1,0 +1,6 @@
+C:\Users\twobomb\Documents\Visual Studio 2013\Projects\SmartUpdater\SmartCopy\bin\Debug\SmartCopy.exe.config
+C:\Users\twobomb\Documents\Visual Studio 2013\Projects\SmartUpdater\SmartCopy\bin\Debug\SmartCopy.exe
+C:\Users\twobomb\Documents\Visual Studio 2013\Projects\SmartUpdater\SmartCopy\bin\Debug\SmartCopy.pdb
+C:\Users\twobomb\Documents\Visual Studio 2013\Projects\SmartUpdater\SmartCopy\obj\Debug\SmartCopy.csprojResolveAssemblyReference.cache
+C:\Users\twobomb\Documents\Visual Studio 2013\Projects\SmartUpdater\SmartCopy\obj\Debug\SmartCopy.exe
+C:\Users\twobomb\Documents\Visual Studio 2013\Projects\SmartUpdater\SmartCopy\obj\Debug\SmartCopy.pdb

@@ -26,7 +26,7 @@ namespace SmartUpdater
 
         private void button1_Click(object sender, EventArgs e){
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.RootFolder = Environment.SpecialFolder.MyComputer;
+
             if (!String.IsNullOrEmpty(Settings.Default.last_dir_prog))
                 fbd.SelectedPath= Settings.Default.last_dir_prog;
 
@@ -145,7 +145,7 @@ namespace SmartUpdater
         private void button3_Click_1(object sender, EventArgs e){
 
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.RootFolder = Environment.SpecialFolder.MyComputer;
+
 
             if (!String.IsNullOrEmpty(Settings.Default.last_dir_build))
                 fbd.SelectedPath = Settings.Default.last_dir_build;

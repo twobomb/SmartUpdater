@@ -100,6 +100,16 @@ namespace SmartUninstaller
                     Registry.LocalMachine.DeleteSubKey(@"SOFTWARE\" + info.InstallName, false);
                 }
                 catch (Exception e) { }
+                try{
+                     Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
+                                true).DeleteValue(info.InstallName, false);
+                    }
+                catch (Exception ex){}
+                try{
+                     Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
+                                true).DeleteValue(info.InstallName, false);
+                    }
+                catch (Exception ex){}
 
                 string fileLauncher = baseDir + "launcher.exe";
                 string fileLauncherDat = baseDir + "launcher.dat";

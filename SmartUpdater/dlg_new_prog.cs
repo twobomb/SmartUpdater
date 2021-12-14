@@ -34,6 +34,8 @@ namespace SmartUpdater
             info.AutoUpdate = cb_autoupdate.Checked;
             info.Visible = cb_visible.Checked;
             info.ExeFile = tb_exe.Text;
+            info.SuggestAddAutoStartSystem = cb_suggest_autostart.Checked;
+            info.AddAutoStartSystem= cb_autostart.Checked;
             info.Description = tb_description.Text;
             if (String.IsNullOrEmpty(info.Name) || String.IsNullOrEmpty(info.ExeFile) ||
                 String.IsNullOrEmpty(info.InstallName) || String.IsNullOrEmpty(info.Path) ||

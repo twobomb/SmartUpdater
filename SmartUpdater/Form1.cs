@@ -20,7 +20,7 @@ namespace SmartUpdater
         public Form1()
         {
             InitializeComponent();
-
+            dev_menu.Visible = false;
 
         }
 
@@ -161,6 +161,11 @@ namespace SmartUpdater
                 var p  = (listBox1.SelectedItem as ProgramInfo);
                 if(MessageBox.Show("Вы уверены что хотите удалить "+p.Name,"Удалить?",MessageBoxButtons.YesNoCancel,MessageBoxIcon.Warning) != DialogResult.Yes)
                     return;
+                if (!File.Exists(p.getInstallPath(false) + "uninstall.exe"))
+                {
+                    MessageBox.Show("Не найден uninstall.exe! Попробуйте сделать востановить целостность файлов и повторить попытку!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.Arguments= "skipconfirm";
                 psi.FileName = p.getInstallPath(false) + "uninstall.exe";
@@ -235,6 +240,32 @@ namespace SmartUpdater
                 return;
             }
             var f = Utils.getDifferenceFiles(p, build);
+            
+            if(!File.Exists(p.getInstallPath(false)+"uninstall.exe"))
+                f.Add(new FileDataInfo()
+                {
+                    Filepath = "uninstall.exe",
+                    IsDirectory = false
+                });
+            if (!File.Exists(p.getInstallPath(false) + "uninstall.dat"))
+                f.Add(new FileDataInfo()
+                {
+                    Filepath = "uninstall.dat",
+                    IsDirectory = false
+                });
+            if (!File.Exists(p.getInstallPath(false) + "launcher.dat"))
+                f.Add(new FileDataInfo()
+                {
+                    Filepath = "launcher.dat",
+                    IsDirectory = false
+                });
+            if (!File.Exists(p.getInstallPath(false) + "launcher.exe"))
+                f.Add(new FileDataInfo()
+                {
+                    Filepath = "launcher.exe",
+                    IsDirectory = false
+                });
+
             if (f.Count == 0)
             {
                 MessageBox.Show(
@@ -262,15 +293,26 @@ namespace SmartUpdater
                     "Неудача", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+
             var f = Utils.getDifferenceFiles(p, build);
-            if (f.Count == 0)
-            {
+            var fAdv = new List<string>();
+
+            if (!File.Exists(p.getInstallPath(false) + "uninstall.exe"))
+                fAdv.Add("uninstall.exe");
+            if (!File.Exists(p.getInstallPath(false) + "uninstall.dat"))
+                fAdv.Add("uninstall.dat");
+            if (!File.Exists(p.getInstallPath(false) + "launcher.dat"))
+                fAdv.Add("launch.dat");
+            if (!File.Exists(p.getInstallPath(false) + "launcher.exe"))
+                fAdv.Add("launch.exe");
+
+            if (f.Count == 0 && fAdv.Count == 0){
                 MessageBox.Show(
                     "Нет необходимости восстановления! Все файлы проверены, ошибок не найдено!",
                     "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else{
-
 
                 dlg_loader loader = new dlg_loader();
                 CancellationTokenSource source = new CancellationTokenSource();
@@ -375,5 +417,12 @@ namespace SmartUpdater
         }
 
     }
+
+        private void включитьМенюРазработчикаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dlg_pwd pwd = new dlg_pwd();
+            if (pwd.ShowDialog(this) == DialogResult.OK)
+                dev_menu.Visible = true;
+        }
 }
 }

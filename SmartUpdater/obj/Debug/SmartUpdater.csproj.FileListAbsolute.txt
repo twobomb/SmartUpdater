@@ -39,3 +39,5 @@ C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.p
 C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\prefabuninstall.bin
 C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.csprojAssemblyReference.cache
 C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\prefablauncher.bin
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\bin\Debug\copy.exe
+C:\Users\twobomb\source\repos\SmartUpdater\SmartUpdater\obj\Debug\SmartUpdater.dlg_pwd.resources

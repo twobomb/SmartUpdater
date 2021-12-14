@@ -32,11 +32,12 @@
             this.tb_path = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rb_all = new System.Windows.Forms.RadioButton();
             this.rb_current = new System.Windows.Forms.RadioButton();
+            this.rb_all = new System.Windows.Forms.RadioButton();
             this.cb_desk = new System.Windows.Forms.CheckBox();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
+            this.cb_autostart = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,6 +78,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Установить для пользователя";
             // 
+            // rb_current
+            // 
+            this.rb_current.AutoSize = true;
+            this.rb_current.Location = new System.Drawing.Point(84, 19);
+            this.rb_current.Name = "rb_current";
+            this.rb_current.Size = new System.Drawing.Size(97, 17);
+            this.rb_current.TabIndex = 1;
+            this.rb_current.Text = "Для текущего";
+            this.rb_current.UseVisualStyleBackColor = true;
+            this.rb_current.CheckedChanged += new System.EventHandler(this.rb_current_CheckedChanged);
+            // 
             // rb_all
             // 
             this.rb_all.AutoSize = true;
@@ -90,23 +102,12 @@
             this.rb_all.UseVisualStyleBackColor = true;
             this.rb_all.CheckedChanged += new System.EventHandler(this.rb_all_CheckedChanged);
             // 
-            // rb_current
-            // 
-            this.rb_current.AutoSize = true;
-            this.rb_current.Location = new System.Drawing.Point(84, 19);
-            this.rb_current.Name = "rb_current";
-            this.rb_current.Size = new System.Drawing.Size(97, 17);
-            this.rb_current.TabIndex = 1;
-            this.rb_current.Text = "Для текущего";
-            this.rb_current.UseVisualStyleBackColor = true;
-            this.rb_current.CheckedChanged += new System.EventHandler(this.rb_current_CheckedChanged);
-            // 
             // cb_desk
             // 
             this.cb_desk.AutoSize = true;
             this.cb_desk.Checked = true;
             this.cb_desk.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_desk.Location = new System.Drawing.Point(12, 117);
+            this.cb_desk.Location = new System.Drawing.Point(12, 133);
             this.cb_desk.Name = "cb_desk";
             this.cb_desk.Size = new System.Drawing.Size(196, 17);
             this.cb_desk.TabIndex = 4;
@@ -115,7 +116,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(217, 98);
+            this.button2.Location = new System.Drawing.Point(214, 114);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(153, 36);
             this.button2.TabIndex = 5;
@@ -125,7 +126,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(376, 98);
+            this.button3.Location = new System.Drawing.Point(376, 114);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(118, 36);
             this.button3.TabIndex = 6;
@@ -133,11 +134,24 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // cb_autostart
+            // 
+            this.cb_autostart.AutoSize = true;
+            this.cb_autostart.Checked = true;
+            this.cb_autostart.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_autostart.Location = new System.Drawing.Point(12, 114);
+            this.cb_autostart.Name = "cb_autostart";
+            this.cb_autostart.Size = new System.Drawing.Size(190, 17);
+            this.cb_autostart.TabIndex = 7;
+            this.cb_autostart.Text = "Автостарт при запуске Windows";
+            this.cb_autostart.UseVisualStyleBackColor = true;
+            // 
             // dlg_install
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(506, 162);
+            this.Controls.Add(this.cb_autostart);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.cb_desk);
@@ -167,5 +181,6 @@
         private System.Windows.Forms.CheckBox cb_desk;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.CheckBox cb_autostart;
     }
 }

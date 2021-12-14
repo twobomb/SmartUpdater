@@ -74,6 +74,12 @@
     <Compile Include="dlg_new_prog.Designer.cs">
       <DependentUpon>dlg_new_prog.cs</DependentUpon>
     </Compile>
+    <Compile Include="dlg_pwd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dlg_pwd.Designer.cs">
+      <DependentUpon>dlg_pwd.cs</DependentUpon>
+    </Compile>
     <Compile Include="dlg_settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +116,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="dlg_new_prog.resx">
       <DependentUpon>dlg_new_prog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dlg_pwd.resx">
+      <DependentUpon>dlg_pwd.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="dlg_settings.resx">
       <DependentUpon>dlg_settings.cs</DependentUpon>
@@ -160,6 +169,11 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="copy.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

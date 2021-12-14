@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using SmartUpdater.Properties;
 
 namespace SmartUpdater
 {
@@ -20,16 +25,22 @@ namespace SmartUpdater
 
             Application.ThreadException += Application_ThreadException;
 
-            //launch обновить и запустить, update - только обновить
-            //update=1 launch=1 guid="{18fb57ee-219c-4325-b679-6f2889d3f911}" exefile="C:\Program Files\New Program\new.exe"
+//            File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory+"args.log","r\n\r\n\r\n"+string.Join("|",args));
+
+            //launch обновить и запустить, update - только обновить,noupdate -не запускать обновление SmartUpdater'a
+            //noupdate=1 update=1 launch=1 guid="{417010c9-0f53-4276-ab7c-0d50ca50bbce}" exefile="C:\Program Files\New Program\new.exe"
             bool isUpdate= false;
             bool isLauncher = false;
+            bool isNoUpdate = false;
             string guiid = "";
             string exefile= "";
             foreach (var s in args) {
                 if (s.Contains("=")){
-                    string param = s.Split('=')[0].Trim().ToLower();
-                    string val= s.Split('=')[1].Trim().Replace("\"","");
+                    var m = Regex.Match(s, "^([^=]+)=(.+)$");
+                    if (!m.Success)
+                        continue;
+                    string param = m.Groups[1].Value;
+                    string val = m.Groups[2].Value;
                     switch (param) {
                         case "launch":
                             val = val.ToLower();
@@ -39,6 +50,10 @@ namespace SmartUpdater
                             val = val.ToLower();
                             isUpdate = (val == "1" || val == "true");
                             break;
+                        case "noupdate":
+                            val = val.ToLower();
+                            isNoUpdate = (val == "1" || val == "true");
+                            break;
                         case "guid":
                             guiid = val;
                             break;
@@ -47,6 +62,24 @@ namespace SmartUpdater
                             break;
                     }
                 }
+            }
+            if(!isNoUpdate)
+                SelfUpdate();
+
+
+            
+
+            if ((isLauncher || isUpdate) && !Utils.CheckConnect()){
+                MessageBox.Show("Не удалось связаться с сервером обновлений! Программа не может быть обновлена, обратитесь к администратору!", "Предупреждение",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (!isLauncher)
+                    return;
+                if (!string.IsNullOrEmpty(exefile) && File.Exists(exefile))
+                    Utils.StartApp(exefile);
+                else
+                    MessageBox.Show("Не удалось найти файл запуска", "Предупреждение",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
             }
 
             if (isLauncher) {
@@ -179,6 +212,66 @@ namespace SmartUpdater
             Application.Run(new Form1());
         }
 
+
+        static void SelfUpdate(){
+            try{
+                var curDir = Utils.ConvertDirectory(AppDomain.CurrentDomain.BaseDirectory,false,true);
+                var exePath = Process.GetCurrentProcess().MainModule.FileName;
+                var argsStart ="noupdate=1 "+ string.Join(" ", Environment.GetCommandLineArgs().Skip(1).Select(s => "\\\""+s+"\\\""));
+                string copyUtils = curDir + "copy.exe";
+                if (!File.Exists(copyUtils)){
+                    throw new Exception("Утилита copy.exe не найдена. Обновление не возможно!");
+                }
+                var cur = Application.ProductVersion;
+                BuildInfo lastBuild = null;
+                HttpWebRequest client = (HttpWebRequest)HttpWebRequest.Create(Settings.Default.host +@"/smartupdater/lastsmartupdater.json");
+                if (client.GetResponse().ContentType == "application/json"){
+                    using (StreamReader sr = new StreamReader(client.GetResponse().GetResponseStream()))
+                    {
+                        string res = sr.ReadToEnd();
+                        sr.Close();
+                        lastBuild = Utils.toObject<BuildInfo>(res);
+                    }
+                }
+                if(Utils.compareVersion(cur,lastBuild.Version) != 1)
+                    return;
+
+                List<FileDataInfo> filesToUpdate = new List<FileDataInfo>();
+                var temp = Utils.getEmptyTempDir();
+                CancellationTokenSource cancel = new CancellationTokenSource();
+                var token = cancel.Token;
+                dlg_loader loader = new dlg_loader();
+                loader.button1.Visible = false;
+                loader.label2.Text = "Обновление приложения SmartUpdater";
+                loader.Shown += (o, args) =>{
+                    Utils.DownloadFilesAsync(Utils.ConvertRoute(Settings.Default.host, false, false) + "/smartupdater/last", lastBuild.Files, temp, (b, error) =>{
+                        try{
+                            ProcessStartInfo psi = new ProcessStartInfo();
+                            psi.Arguments = String.Format("source=\"{0}\" destination=\"{1}\"  start=\"{2}\" arguments=\"{3}\" killprocesspath=\"{4}\" deletesource=1", Utils.ConvertDirectory(temp, false, false), Utils.ConvertDirectory(curDir,false,false), exePath, argsStart, exePath);
+                            psi.FileName = copyUtils;
+                            Process.Start(psi);
+                        }
+                        catch (Exception){
+                            loader.Close();
+                        }
+
+                    },
+                        (down, all) =>
+                        {
+
+                            loader.BeginInvoke(new Action(() =>
+                            {
+                                loader.progressBar1.Value = (int)(((double)down / (double)all) * 100);
+                                loader.label1.Text = "Загружено " + Utils.SizeSuffix(down) + " из " + Utils.SizeSuffix(all);
+                            }));
+                        }, token);
+                };
+                loader.ShowDialog();
+            }
+            catch (Exception eex){
+                Utils.pushCrashLog(eex);
+            }
+        }
         static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
             ExceptionHandler(e.Exception);

@@ -46,6 +46,8 @@
             this.cb_combine = new System.Windows.Forms.CheckBox();
             this.tb_icon_path = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.cb_autostart = new System.Windows.Forms.CheckBox();
+            this.cb_suggest_autostart = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -209,11 +211,33 @@
             this.label7.TabIndex = 12;
             this.label7.Text = "Путь к иконке";
             // 
+            // cb_autostart
+            // 
+            this.cb_autostart.AutoSize = true;
+            this.cb_autostart.Location = new System.Drawing.Point(198, 195);
+            this.cb_autostart.Name = "cb_autostart";
+            this.cb_autostart.Size = new System.Drawing.Size(85, 17);
+            this.cb_autostart.TabIndex = 13;
+            this.cb_autostart.Text = "Автозапуск";
+            this.cb_autostart.UseVisualStyleBackColor = true;
+            // 
+            // cb_suggest_autostart
+            // 
+            this.cb_suggest_autostart.AutoSize = true;
+            this.cb_suggest_autostart.Location = new System.Drawing.Point(280, 195);
+            this.cb_suggest_autostart.Name = "cb_suggest_autostart";
+            this.cb_suggest_autostart.Size = new System.Drawing.Size(147, 17);
+            this.cb_suggest_autostart.TabIndex = 14;
+            this.cb_suggest_autostart.Text = "Предлагать автозапуск";
+            this.cb_suggest_autostart.UseVisualStyleBackColor = true;
+            // 
             // dlg_new_prog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(434, 396);
+            this.Controls.Add(this.cb_suggest_autostart);
+            this.Controls.Add(this.cb_autostart);
             this.Controls.Add(this.tb_icon_path);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.cb_combine);
@@ -260,5 +284,7 @@
         private System.Windows.Forms.CheckBox cb_combine;
         private System.Windows.Forms.TextBox tb_icon_path;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.CheckBox cb_autostart;
+        private System.Windows.Forms.CheckBox cb_suggest_autostart;
     }
 }

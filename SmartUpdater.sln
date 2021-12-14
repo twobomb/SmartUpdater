@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartUninstaller", "SmartUn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartLauncher", "SmartLauncher\SmartLauncher.csproj", "{65C7313F-6A49-494C-A1F4-462AFA754496}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartCopy", "SmartCopy\SmartCopy.csproj", "{786A2D83-FA22-443E-97FF-E37A48A1744C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{65C7313F-6A49-494C-A1F4-462AFA754496}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65C7313F-6A49-494C-A1F4-462AFA754496}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65C7313F-6A49-494C-A1F4-462AFA754496}.Release|Any CPU.Build.0 = Release|Any CPU
+		{786A2D83-FA22-443E-97FF-E37A48A1744C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{786A2D83-FA22-443E-97FF-E37A48A1744C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{786A2D83-FA22-443E-97FF-E37A48A1744C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{786A2D83-FA22-443E-97FF-E37A48A1744C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

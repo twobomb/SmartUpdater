@@ -180,10 +180,10 @@ namespace SmartUpdater
 
         public static string getEmptyTempDir()
         {
-            var temp = Path.GetTempPath() + "\\";
+            var temp = Utils.ConvertDirectory(Path.GetTempPath(),false,true);
             string dirname = "";
             do{
-                dirname = "temp_smart_updater_" + DateTime.Now.Millisecond;
+                dirname = "temp_smart_updater_" + DateTime.Now.Ticks;
 
             } while (Directory.Exists(temp + dirname));
             temp += dirname;
@@ -213,6 +213,20 @@ namespace SmartUpdater
             fs.Close();
             return obj;
         }*/
+
+        public static bool CheckConnect(){
+            try
+            {
+                HttpWebRequest client = (HttpWebRequest)HttpWebRequest.Create(Settings.Default.host + @"/smartupdater/list.json");
+                if (client.GetResponse().ContentType == "application/json")
+                    return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
         public static List<FileDataInfo> getDifferenceFiles(ProgramInfo p, BuildInfo b){//Получить файлы у которых различается кеш
             if (!p.isInstalled())
                 return null;
@@ -237,22 +251,12 @@ namespace SmartUpdater
         }
         public static int compareVersion(string ver1, string ver2)// -1 - ver1 больше, 0 - версии равны, 1 - версия 2 больше
         {
-            if (ver1 == ver2)
-                return 0;
-            try{
-                ver1 = ver1.Replace(".", "");
-                ver2 = ver2.Replace(".", "");
-                while (ver1.Length < 4)
-                    ver1 += "0";
-                while (ver2.Length < 4)
-                    ver2 += "0";
-                int v1 = Int32.Parse(ver1);
-                int v2 = Int32.Parse(ver2);
-                return v1 == v2 ? 0 : (v1 > v2 ? -1 : 1);
+            try
+            {
+                return new Version(ver2).CompareTo(new Version(ver1));
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Произошла ошибка при сравнении версий!\n"+ex.Message);
                 Utils.pushCrashLog(ex);
             }
             return -1;
@@ -366,7 +370,7 @@ namespace SmartUpdater
             Info.FileName = path;
             Process.Start(Info);
         }
-        public static bool addToAutoStart(ProgramInfo p, bool onlyForCurrentUser = false){
+        public static bool AddToAutoStart(string installName,string pathToExe, bool onlyForCurrentUser = false){
             List<RegistryKey> tryKeys = new List<RegistryKey>();
             if (onlyForCurrentUser)
                 tryKeys.Add(Microsoft.Win32.Registry.CurrentUser);
@@ -379,8 +383,7 @@ namespace SmartUpdater
                     Microsoft.Win32.RegistryKey myKey =
                         registryKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
                             true);
-                    var appName = p.InstallName;
-                    myKey.SetValue(appName, p.getInstallPath(true));
+                    myKey.SetValue(installName, pathToExe);
                     return true;
 
                 }
@@ -390,6 +393,24 @@ namespace SmartUpdater
                 }
             }
             return false;
+        }
+        public static void RemoveAutoStart(string installName){
+            List<RegistryKey> tryKeys = new List<RegistryKey>();
+                tryKeys.Add(Microsoft.Win32.Registry.LocalMachine);
+                tryKeys.Add(Microsoft.Win32.Registry.CurrentUser);
+            foreach (var registryKey in tryKeys){
+                try{
+                    Microsoft.Win32.RegistryKey myKey =
+                        registryKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
+                            true);
+                    myKey.DeleteValue(installName,false);
+
+                }
+                catch (Exception ex)
+                {
+                    Utils.pushCrashLog(ex);
+                }
+            }
         }
         public static bool AddUninstaller(string installPath, string uninstallPath, string guid, string name, string version,string company ,bool onlyForCurrentUser = false)
         {
